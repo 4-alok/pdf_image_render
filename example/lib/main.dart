@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:pdf_image_render/pdf_image_render.dart';
 
@@ -18,28 +19,21 @@ class _MyAppState extends State<MyApp> {
     print(page);
   }
 
-  void generateImage(String path) async {
-    final bool done = await PdfImageRender.generateThumbnails(path);
-    print(done);
-  }
-
   @override
   void initState() {
-    PdfImageRender().thumbnailStream(filePath)?.listen((event) {
-      print(event);
-    });
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(brightness: Brightness.dark),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
         body: Container(
+          width: window.physicalSize.width,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -50,8 +44,33 @@ class _MyAppState extends State<MyApp> {
                 text: "Get Page count",
               ),
               button(
-                onTap: () => generateImage(filePath),
+                onTap: () {
+                  PdfImageRender.thumbnailStream(filePath)?.listen((event) {
+                    print(event);
+                  });
+                },
                 text: "Generate image",
+              ),
+              button(
+                // onTap: () => PdfImageRender.test(),
+                onTap: () => null,
+                text: "Test",
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 50),
+                width: window.physicalSize.width,
+                child: Column(
+                  children: [
+                    rowAnim(),
+                    rowAnim(),
+                    rowAnim(),
+                    rowAnim(),
+                    rowAnim(),
+                    rowAnim(),
+                    rowAnim(),
+                    rowAnim(),
+                  ],
+                ),
               )
             ],
           ),
@@ -60,13 +79,34 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Padding button({required Function onTap, required String text}) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+  Row rowAnim() {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        animat(),
+        animat(),
+        animat(),
+        animat(),
+        animat(),
+        animat(),
+        animat(),
+        animat(),
+        animat(),
+        animat(),
+      ],
+    );
+  }
+
+  Widget button({required Function onTap, required String text}) {
+    return Container(
+      padding: const EdgeInsets.only(top: 20),
       child: ElevatedButton(
         onPressed: () => onTap(),
         child: Text(text),
       ),
     );
   }
+
+  Widget animat() => CircularProgressIndicator();
 }

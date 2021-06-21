@@ -1,7 +1,7 @@
 package com.flutter.pdfimagerender.pdf_image_render;
 
-import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Environment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -20,11 +20,13 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 
+
 public class PdfImageRenderPlugin implements FlutterPlugin, MethodCallHandler {
     final private String streamID = "pdf_image_render_stream";
     final private String channelID = "pdf_image_render";
     private MethodChannel channel;
     private EventChannel eventChannel;
+
     @Override
 
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
@@ -32,8 +34,7 @@ public class PdfImageRenderPlugin implements FlutterPlugin, MethodCallHandler {
         channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), channelID);
         eventChannel = new EventChannel(flutterPluginBinding.getBinaryMessenger(), streamID);
         channel.setMethodCallHandler(this);
-        EventChannelHandler eventChannelHandler = new EventChannelHandler();
-        eventChannel.setStreamHandler(eventChannelHandler);
+        eventChannel.setStreamHandler(new EventChannelHandler());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -49,7 +50,12 @@ public class PdfImageRenderPlugin implements FlutterPlugin, MethodCallHandler {
                 result.success(pageCount);
                 break;
             }
-
+//            case "test": {
+//                final String tempPath = Environment.getExternalStorageDirectory().getPath();
+//                Log.d("Path------------------------->", tempPath);
+//                result.success(BuildConfig.LIBRARY_PACKAGE_NAME);
+//                break;
+//            }
             default:
                 result.notImplemented();
                 break;
@@ -73,22 +79,9 @@ public class PdfImageRenderPlugin implements FlutterPlugin, MethodCallHandler {
         return document != null ? document.getNumberOfPages() : 0;
     }
 
-    private Bitmap decreaseBitmapSize(Bitmap image, int maxSize) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        float bitmapRatio = (float) width / (float) height;
-        if (bitmapRatio > 1) {
-            width = maxSize;
-            height = (int) (width / bitmapRatio);
-        } else {
-            height = maxSize;
-            width = (int) (height * bitmapRatio);
-        }
-        return Bitmap.createScaledBitmap(image, width, height, true);
-    }
-
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
         channel.setMethodCallHandler(null);
+        eventChannel.setStreamHandler(null);
     }
 }
