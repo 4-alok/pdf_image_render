@@ -25,10 +25,10 @@ class PdfImageRender {
     }
   }
 
-  // static Future<void> test() async {
-  //   final String? s = await _channel.invokeMethod('test');
-  //   print(s);
-  // }
+  static Future<void> test() async {
+    final String? s = await _channel.invokeMethod('test');
+    print(s);
+  }
 
   static Stream<String>? thumbnailStream(String path) {
     if (File(path).existsSync()) {

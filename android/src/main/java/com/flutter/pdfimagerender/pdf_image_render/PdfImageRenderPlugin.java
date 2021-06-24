@@ -1,5 +1,6 @@
 package com.flutter.pdfimagerender.pdf_image_render;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
 
@@ -25,6 +26,7 @@ public class PdfImageRenderPlugin implements FlutterPlugin, MethodCallHandler {
     final private String streamID = "pdf_image_render_stream";
     final private String channelID = "pdf_image_render";
     private MethodChannel channel;
+    private Context context;
     private EventChannel eventChannel;
 
     @Override
@@ -35,6 +37,7 @@ public class PdfImageRenderPlugin implements FlutterPlugin, MethodCallHandler {
         eventChannel = new EventChannel(flutterPluginBinding.getBinaryMessenger(), streamID);
         channel.setMethodCallHandler(this);
         eventChannel.setStreamHandler(new EventChannelHandler());
+        context = flutterPluginBinding.getApplicationContext();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -50,12 +53,10 @@ public class PdfImageRenderPlugin implements FlutterPlugin, MethodCallHandler {
                 result.success(pageCount);
                 break;
             }
-//            case "test": {
-//                final String tempPath = Environment.getExternalStorageDirectory().getPath();
-//                Log.d("Path------------------------->", tempPath);
-//                result.success(BuildConfig.LIBRARY_PACKAGE_NAME);
-//                break;
-//            }
+            case "test": {
+                new Test(context, result).go();
+                break;
+            }
             default:
                 result.notImplemented();
                 break;

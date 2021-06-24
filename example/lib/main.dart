@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:pdf_image_render/pdf_image_render.dart';
@@ -17,6 +18,19 @@ class _MyAppState extends State<MyApp> {
   void getPageCount(String path) async {
     final int? page = await PdfImageRender.pageCount(path);
     print(page);
+  }
+
+  void delete(String path) async {
+    Directory dir = Directory(path);
+    for (FileSystemEntity e in dir.listSync()) {
+      if ((e is File) && (e.path != filePath)) {
+        e.deleteSync();
+      }
+    }
+  }
+
+  void test() async {
+    await PdfImageRender.test();
   }
 
   @override
@@ -52,21 +66,18 @@ class _MyAppState extends State<MyApp> {
                 text: "Generate image",
               ),
               button(
-                // onTap: () => PdfImageRender.test(),
-                onTap: () => null,
+                onTap: () => test(),
                 text: "Test",
+              ),
+              button(
+                onTap: () => delete(Directory(filePath).parent.path),
+                text: "Delete",
               ),
               Container(
                 margin: EdgeInsets.only(top: 50),
                 width: window.physicalSize.width,
                 child: Column(
                   children: [
-                    rowAnim(),
-                    rowAnim(),
-                    rowAnim(),
-                    rowAnim(),
-                    rowAnim(),
-                    rowAnim(),
                     rowAnim(),
                     rowAnim(),
                   ],
