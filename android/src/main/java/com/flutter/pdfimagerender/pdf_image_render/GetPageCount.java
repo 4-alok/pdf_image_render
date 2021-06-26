@@ -1,52 +1,44 @@
 package com.flutter.pdfimagerender.pdf_image_render;
-import android.content.Context;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
+import com.tom_roush.pdfbox.pdmodel.PDDocument;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import io.flutter.Log;
-//import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.util.PathUtils;
 
-public class Test {
-    private Context context;
-    private Result result;
-    
-    Test(Context crtxt, Result result){
-        context = crtxt;
-        this.result = result;
+public class GetPageCount {
+    GetPageCount(Result result, String path){
+        executeInBackground(() ->runInBackground(path), result);
     }
 
     private final Executor uiThreadExecutor = new UiThreadExecutor();
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public void go(){
-//        final String tempPath = Environment.getExternalStorageDirectory().getPath();
-//        PathUtils.getDataDirectory(context);
-//        Log.d("Path------------------------->", tempPath);
-//
-//        int coreCount = Runtime.getRuntime().availableProcessors();
-//        Log.d("CPU", "CPU count :"+coreCount);
-//        executor.execute(new CupCompute());
-
-//        return tempPath;
-
-        executeInBackground(this::runInBackground, result);
-    }
-
-    private String runInBackground() {
-        Log.d("Isolate", "Running in background");
-        return "Success";
+    private int runInBackground(String path) {
+        PDDocument document = null;
+        try {
+            File renderFile = new File(path);
+            document = PDDocument.load(renderFile);
+        } catch (IOException e) {
+            Log.e("Pdf Image Render :", "Exception thrown while loading document to strip", e);
+        } finally {
+            try {
+                if (document != null) document.close();
+            } catch (IOException e) {
+                Log.e("Pdf Image Render :", "Exception thrown while closing document", e);
+            }
+        }
+        return document != null ? document.getNumberOfPages() : 0;
     }
 
     private <T> void executeInBackground(Callable<T> task, Result result) {
@@ -79,12 +71,5 @@ public class Test {
         public void execute(Runnable command) {
             handler.post(command);
         }
-    }
-}
-
-class CupCompute implements Runnable {
-    @Override
-    public void run() {
-        Log.d("Isolated", "This is from isolated world");
     }
 }

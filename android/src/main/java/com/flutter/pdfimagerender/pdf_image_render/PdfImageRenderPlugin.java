@@ -2,7 +2,6 @@ package com.flutter.pdfimagerender.pdf_image_render;
 
 import android.content.Context;
 import android.os.Build;
-import android.os.Environment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -48,36 +47,17 @@ public class PdfImageRenderPlugin implements FlutterPlugin, MethodCallHandler {
                 result.success("Android " + android.os.Build.VERSION.RELEASE);
                 break;
             case "getPageCount": {
-                final String path = call.argument("path");
-                int pageCount = getPageCount(path);
-                result.success(pageCount);
+                new GetPageCount(result, call.argument("path"));
                 break;
             }
             case "test": {
-                new Test(context, result).go();
+                result.success("Test");
                 break;
             }
             default:
                 result.notImplemented();
                 break;
         }
-    }
-
-    private int getPageCount(String path) {
-        PDDocument document = null;
-        try {
-            File renderFile = new File(path);
-            document = PDDocument.load(renderFile);
-        } catch (IOException e) {
-            Log.e("Pdf Image Render :", "Exception thrown while loading document to strip", e);
-        } finally {
-            try {
-                if (document != null) document.close();
-            } catch (IOException e) {
-                Log.e("Pdf Image Render :", "Exception thrown while closing document", e);
-            }
-        }
-        return document != null ? document.getNumberOfPages() : 0;
     }
 
     @Override

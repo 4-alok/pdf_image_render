@@ -18,6 +18,7 @@ class PdfImageRender {
     if (File(path).existsSync()) {
       final int count = await _channel
           .invokeMethod('getPageCount', <String, dynamic>{'path': path});
+      print(count);
       return count;
     } else {
       print("File do not exist");
